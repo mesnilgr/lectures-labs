@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Deep Learning Lectures</title>
+    <meta charset="utf-8" />
+    <style>
+      .left-column {
+        width: 50%;
+        float: left;
+      }
+      .right-column {
+        width: 50%;
+        float: right;
+      }
+      .footnote {
+        position: absolute;
+        bottom: 2em;
+        margin: 0em 2em;
+      }
+      .grey {
+        color: #bbbbbb;
+      }
+    </style>
+    <link rel="stylesheet" type="text/css" href="slides.css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle
+
+# Large Language models
+
+Grégoire Mesnil
+
+---
+## Outline
+---
+## What is a Large Language Model
+
+- Causal Language Modeling: Transformer architecture to predict the next word
+- Lossy Compression of a corpus 
+- State-less model, Tranformer Layers, BPE tokens
+
+---
+## Pre-Training
+
+Cost, corpus, hardware, data (the cut-off)
+wind funnel for hyper parameter tuning
+
+Llama 2
+
+Carbon Footprint Pretraining utilized a cumulative
+3.3M GPU hours of computation on hardware of type
+A100-80GB (TDP of 350-400W).
+Estimated total emissions were 539 tCO2eq.
+
+Time (GPU hours)	Power Consumption (W)	Carbon Emitted(tCO2eq)
+Llama 2 7B	184320	400	31.22
+Llama 2 13B	368640	400	62.44
+Llama 2 70B	1720320	400	291.42
+Total	3311616		539.00
+
+Overview
+Llama 2 was pretrained on 2 trillion tokens of data from publicly available sources.
+The fine-tuning data includes publicly available instruction datasets, as well as over one million new human-annotated examples.
+
+---
+## Fine/Instruct Tuning
+
+
+- Continued pretraining on domain specific corpus e.g. swap the dataset
+- Introduction of specific ways to interact with the model: system prompt question answer
+- Finetuning into an assistant
+
+--- Finetuning examples
+
+Examples
+
+- Traduction
+- Natural language to SQL
+- DeepSeek Math resolution
+
+---
+## Finetuning on Colab (T4, 16GB VRAM)
+
+QLora and Quantization techniques
+Memory requirements
+PEFT library
+
+---
+## Human feedback
+
+DPO, KTO, RLHF
+
+---
+## Bias and Toxicity
+
+https://huggingface.co/blog/evaluating-llm-bias
+
+---
+## LLM Security
+
+Red team 
+Role
+Jailbreaks/ Prompt injection/  Data poisoning
+
+---
+## Evaluation
+
+LLM Leader board
+Chatbot Arena
+
+---
+## Increasing Context
+
+positional embeddings
+ALiBi positional embedding,
+Sparse Attention,
+FlashAttention,
+Multi-Query attention,
+Conditional computation, and 80GB A100 GPUs
+
+Mistral-7B:
+Grouped-query attention (GQA) for faster inference
+Uses Sliding Window Attention (SWA)
+to handle longer sequences at smaller cost
+
+see https://github.com/mistralai/mistral-src?tab=readme-ov-file
+
+https://blog.gopenai.com/how-to-speed-up-llms-and-use-100k-context-window-all-tricks-in-one-place-ffd40577b4c
+
+---
+## Filling the context: RAG
+
+Retrieved Augmented Generation: from the hard drive to the ram 
+- vector databases
+
+---
+
+## Inference
+
+CPU llama.cpp
+vLLM
+Optimum benchmark
+Quantization AWQ/ GPTQ The Bloke
+Maximizing Throughput / Minimizing latency
+
+Keep the model small: if performance is the same for a 7B model and a 20B model, keep the 7B model
+Quantize the model (GPTQ for instance)
+It may sound obvious but make sure it runs on a GPU ;)
+If your GPU is compatible, use Flash Attention (it computes the attention part faster)
+Make sure to “compile” the graph (not eager mode) and use a static kv-cache
+If you have access to multiple GPUs, use tensor parallelism to run the inference on multiple GPUs (we have integrations with the DeepSpeed library)
+Speculative decoding (using a smaller model to make predictions faster that we ensure are validated by our bigger model)
+Batch decoding
+---
+## Generation strategies
+
+Greedy
+Temperature / Hallucinations
+Beam Search
+Nucleus sampling
+sampling
+
+see notebook about Palm Google
+see blog post von platen
+
+---
+## Close/Open Source models
+
+LLama2 / Falcon / Microsoft phi1.5
+Cohere/OpenAI Chat GPT/ TogetherAI/Claude Anthropic
+
+---
+## Merging models
+
+substack mayonnaise
+
+---
+## MoE
+Mistral-7B Instruct
+source code mistral-src?tab
+
+https://blog.gopenai.com/
+
+---
+## Smaller and Smaller
+
+CPM 
+
+---
+## GPT Agents
+
+---
+## References
+
+- [1hr Talk YouTube] Intro to Large Language Models - Andrej Karpathy 
+- [1hr30min Talk YouTube] A Hackers' Guide to Language Models - Jeremy Howard
+- Hugging Face blog
+- The Kaitchup Substack
+
+
+
+
+
+
+
+
+
+    </textarea>
+    <style type="text/css">
+      code.has-jax {
+        font: inherit;
+        font-size: 100%;
+        background: inherit;
+        border: inherit;
+      }
+    </style>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
+      }
+      });
+      MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+      for(i = 0; i < all.length; i += 1) {
+       all[i].SourceElement().parentNode.className += ' has-jax';
+       }
+       });
+    </script>
+    <script
+      type="text/javascript"
+      src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    ></script>
+    <script src="../remark.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        highlightStyle: "github",
+        highlightSpans: true,
+        highlightLines: true,
+      });
+    </script>
+  </body>
+</html>
